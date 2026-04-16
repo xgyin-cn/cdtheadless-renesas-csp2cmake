@@ -54,10 +54,7 @@ function parseMtpjFile(filePath) {
     const matched_class = classes.find(
       (cls) => cls.$.Guid === "eb3b4b69-af1a-4dc1-b2bc-4b81a50fb2a4",
     );
-    const instance = Object.assign(
-      {},
-      ...matched_class.Instance,
-    );
+    const instance = Object.assign({}, ...matched_class.Instance);
     if (!instance) return null;
 
     const buildModeCount = parseInt(instance.BuildModeCount?.[0] ?? "0", 10);
@@ -73,10 +70,14 @@ function parseMtpjFile(filePath) {
         index: i,
       });
     }
-    const currentBuildModeIndex = buildModes.findIndex((i) => i.name === currentBuildModeRaw);
+    const currentBuildModeIndex = buildModes.findIndex(
+      (i) => i.name === currentBuildModeRaw,
+    );
     const projectType =
-      instance["GeneralOptionOutput-" + currentBuildModeIndex]?.[0] ??
-      "" === "LibraryFile" ? "lib" : "exe";
+      (instance["GeneralOptionOutput-" + currentBuildModeIndex]?.[0] ?? "") ===
+      "LibraryFile"
+        ? "lib"
+        : "exe";
 
     // // Current build mode name (decode)
     const currentBuildMode = currentBuildModeRaw;

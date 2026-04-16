@@ -34,14 +34,14 @@ class RenesasCliOption {
       let obj = {};
       obj[arg] = value;
       this.input_args.push(obj);
-    } else throw new Error("Invalid argument");
+    } else throw new Error("Invalid argument in input options " + arg + " for " + this.format);
   }
 
   switchCheck() {
     let input_args = Object.assign({}, ...this.input_args);
     if (this.compiled_switch && this.input_args.length > 0) {
       let res = this.compiled_switch(input_args);
-      return Boolean(res);
+      return (res === 'true');
     }
   }
 }

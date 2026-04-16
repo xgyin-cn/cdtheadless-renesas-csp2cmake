@@ -73,8 +73,9 @@ class RenesasOptionFilter {
       }
       option.set(options[key].cli_option, option_value);
     }
-    console.log(option);
+    // console.log(option);
     option.filter_options();
+    return option;
   }
 }
 
@@ -97,8 +98,8 @@ class RenesasMtpjParser {
     };
   }
   setEnv(data) {
-    const configers = ""//vscode.workspace.getConfiguration("renesas");
-    const microToolPath = ""//configers.get("microToolPath");
+    const configers = ""; //vscode.workspace.getConfiguration("renesas");
+    const microToolPath = ""; //configers.get("microToolPath");
     const system_env = process.env;
     this.env = {};
     this.env["ActiveProjectDir"] = path.dirname(data.filePath);
@@ -124,18 +125,21 @@ class RenesasMtpjParser {
     function filter_data(data, guid) {
       return data.filter((d) => guid.find((i) => i === d.$?.Guid));
     }
+    this.option_filted = [];
 
-    this.projectTypeMap[data.projectType].map((item) => {
-      new RenesasOptionFilter(item).matchOption(
-        this.cli_maker[item],
-        Object.assign(
-          {},
-          ...filter_data(data.matched_class.Instance, this.data_dict[item]),
+    for (const item of this.projectTypeMap[data.projectType]) {
+      this.option_filted.push(
+        new RenesasOptionFilter(item).matchOption(
+          this.cli_maker[item],
+          Object.assign(
+            {},
+            ...filter_data(data.matched_class.Instance, this.data_dict[item]),
+          ),
+          this.currentBuildModeIndex,
+          this.env,
         ),
-        this.currentBuildModeIndex,
-        this.env,
       );
-    });
+    }
   }
 }
 

@@ -887,7 +887,7 @@
         },
         "HexOptionCrcEndian": {
             "cli_option": "-crc",
-            "arg": "endian",
+            "arg": "ending",
             "type": "string"
         },
         "HexOptionCrcInitialValue": {

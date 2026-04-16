@@ -307,7 +307,7 @@
                     "auto"
                 ]
             },
-            "switch": "<%= enum_type === 'auto' %> ",
+            "switch": "<%= enum_type === 'auto' %>",
             "format": "-Xenum_type=<%= enum_type %>",
             "PEonly": false,
             "maxVersion": ""
@@ -339,7 +339,7 @@
                     "xcheck"
                 ]
             },
-            "switch": "<%= comp === 'xcheck' %> ",
+            "switch": "<%= comp === 'xcheck' %>",
             "format": "-Xcheck=shc",
             "PEonly": false,
             "maxVersion": ""
@@ -376,7 +376,7 @@
                 "requiredremove": "required_remove=<%= requiredremove_num %>",
                 "specifiesfile": "<%= file_name %>"
             },
-            "switch": "<%= item != 'none' %> ",
+            "switch": "<%= item != 'none' %>",
             "format": "-Xmisra2004=<%= item %>",
             "PEonly": true,
             "maxVersion": ""
@@ -2069,6 +2069,29 @@
                 ],
                 "SpecifiesNumber": "-change_message=information=<%= number %>",
                 "All": "-change_message=information"
+            },
+            "switch": "<%= value != 'None' %>",
+            "format": "<%= value %>"
+        },
+        "-change_message_warn": {
+            "description": "此选项更改信息、警告和错误消息的类型。",
+            "type": "string",
+            "required": [],
+            "minVersion": "",
+            "PEonly": false,
+            "maxVersion": "",
+            "args": [
+                "value",
+                "number"
+            ],
+            "args_valid": {
+                "value": [
+                    "None",
+                    "SpecifiesNumber",
+                    "All"
+                ],
+                "SpecifiesNumber": "-change_message=warning=<%= number %>",
+                "All": "-change_message=warning"
             },
             "switch": "<%= value != 'None' %>",
             "format": "<%= value %>"
