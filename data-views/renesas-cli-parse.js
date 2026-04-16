@@ -73,7 +73,8 @@ class RenesasOptionFilter {
       }
       option.set(options[key].cli_option, option_value);
     }
-
+    console.log(option);
+    option.filter_options();
   }
 }
 

@@ -30,13 +30,19 @@ class RenesasCliOption {
   }
 
   input(arg, value) {
-    if (this.args.include(arg)) this.input_args.push({ arg, value });
-    else throw new Error("Invalid argument");
+    if (this.args.includes(arg)) {
+      let obj = {};
+      obj[arg] = value;
+      this.input_args.push(obj);
+    } else throw new Error("Invalid argument");
   }
 
   switchCheck() {
-    if (this.compiled_switch)
-      return eval(this.compiled_switch(this.input_args));
+    let input_args = Object.assign({}, ...this.input_args);
+    if (this.compiled_switch && this.input_args.length > 0) {
+      let res = this.compiled_switch(input_args);
+      return Boolean(res);
+    }
   }
 }
 
@@ -48,15 +54,34 @@ class RenesasCliMaker {
         new RenesasCliOption(value),
       ]),
     );
+    this.activet_options = []; // 保存激活的选项
   }
   set(cli_name, option_value) {
-    const option = this.get(cli_name);
-    Object.entries(option_value).forEach(([key, value]) =>
-      option.input(key, value),
-    );
+    if (cli_name instanceof Array) {
+      for (const name of cli_name) {
+        const option = this.get(name);
+        if (option)
+          Object.entries(option_value).forEach(([key, value]) =>
+            option.input(key, value),
+          );
+        else console.log(`No such option: ${name}`);
+      }
+    } else {
+      const option = this.get(cli_name);
+      if (option)
+        Object.entries(option_value).forEach(([key, value]) =>
+          option.input(key, value),
+        );
+      else console.log(`No such option: ${cli_name}`);
+    }
   }
   get(cli_name) {
     return this.options.get(cli_name);
+  }
+  filter_options() {
+    for (const [key, value] of this.options) {
+      if (value.switchCheck()) this.activet_options.push(key);
+    }
   }
 }
 

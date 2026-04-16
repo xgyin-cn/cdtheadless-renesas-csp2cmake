@@ -325,7 +325,7 @@
             "type": "boolean"
         },
         "GeneralOptionR4": {
-            "cli_option": "-R4",
+            "cli_option": "-r4",
             "arg": "value",
             "type": "string",
             "rule": "lowercase"
