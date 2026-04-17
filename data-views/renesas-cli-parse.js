@@ -1,5 +1,6 @@
 const vscode = require("vscode");
 const xml2js = require("xml2js");
+const ejs = require("ejs");
 const fs = require("fs");
 const path = require("path");
 const mtpj2cli = require("./mtpj2cli_parse.json");
@@ -10,8 +11,18 @@ const Collapsed = vscode.TreeItemCollapsibleState.Collapsed;
 const Expanded = vscode.TreeItemCollapsibleState.Expanded;
 const NoCollapsed = vscode.TreeItemCollapsibleState.None;
 
+let extensionContext = null;
+
+function setContext(context) {
+  extensionContext = context;
+}
+function getContext() {
+  return extensionContext;
+}
+
+
 function replaceVars(str, variables) {
-  return str.replace(/%([^%]+)%/g, (match, varName) => {
+  return str.replace("\n", "").replace(/%([^%]+)%/g, (match, varName) => {
     return variables[varName] !== undefined ? variables[varName] : match;
   });
 }
@@ -50,7 +61,6 @@ class RenesasOptionFilter {
     const keys = Object.keys(options);
     for (const key of keys) {
       let option_value = {};
-
       const op = key + "-" + idx;
       if (xml[op] !== undefined) {
         const value = xml[op];
@@ -63,18 +73,20 @@ class RenesasOptionFilter {
           }
         } else if (rule.type === "string") {
           if (rule.rule === "lowercase") {
-            option_value[rule.arg] = value[0].toLowerCase();
-          } else option_value[rule.arg] = value[0];
+            option_value[rule.arg] = replaceVars(value[0].toLowerCase(), env);
+          } else option_value[rule.arg] = replaceVars(value[0], env);
         } else if (rule.type === "list") {
-          option_value[rule.arg] = value[0].split("\r");
+          option_value[rule.arg] = value[0]
+            .split("\r")
+            .map((x) => replaceVars(x, env));
         } else if (rule.type === "string-env") {
           option_value[rule.arg] = replaceVars(value[0], env);
         }
       }
+      // console.log(key,option_value);
       option.set(options[key].cli_option, option_value);
     }
     // console.log(option);
-    option.filter_options();
     return option;
   }
 }
@@ -97,9 +109,13 @@ class RenesasMtpjParser {
       Lib选项: ["625fdef6-79e0-476f-ae26-6cde275afb59"],
     };
   }
+
   setEnv(data) {
-    const configers = ""; //vscode.workspace.getConfiguration("renesas");
-    const microToolPath = ""; //configers.get("microToolPath");
+    const configers = vscode.workspace.getConfiguration("renesas");
+    let microToolPath = "";
+    if (configers) {
+      microToolPath = configers.get("ccrh_toolchain_path");
+    }
     const system_env = process.env;
     this.env = {};
     this.env["ActiveProjectDir"] = path.dirname(data.filePath);
@@ -115,13 +131,22 @@ class RenesasMtpjParser {
     this.env["ProjectName"] = data.projectName;
     this.env["TempDir"] = system_env.TEMP;
     this.env["WinDir"] = system_env.SystemRoot + "\\system32";
-
+    this.env["ResetVectorPE1"] = "0"; //data.resetVectorPE1;
     Object.assign(this.env, system_env);
   }
+
+  clear() {
+    for (const value of Object.values(this.cli_maker)) {
+      value.clear();
+    }
+  }
+
   parseMtpjXmlObj(data) {
     this.data = data;
+    this.clear();
     this.setEnv(data);
     this.currentBuildModeIndex = data.currentBuildModeIndex;
+    this.projectType = data.projectType;
     function filter_data(data, guid) {
       return data.filter((d) => guid.find((i) => i === d.$?.Guid));
     }
@@ -140,9 +165,118 @@ class RenesasMtpjParser {
         ),
       );
     }
+    const configers = vscode.workspace.getConfiguration("renesas");
+    configers.update(
+      "ccrh_toolchain_path",
+      path.normalize(
+        Object.assign({}, ...this.cli_maker["C编译选项"].get("-V").input_args)[
+        "path"
+        ][1] + "../../../",
+      ),
+    );
+
+    this.version = Object.assign({},...this.cli_maker["C编译选项"].options.get("-V").input_args)["version"];
+    for (const item of this.projectTypeMap[data.projectType])
+    {
+      this.cli_maker[item].setVersion(this.version);
+    }
+    for (const item of this.option_filted) {
+      item.filter_options();
+    }
+  }
+
+  generateCmakeCli() {
+    const float_mode = this.cli_maker["C编译选项"].fpu_flag();
+    const ccrh_toolchain_path = path.normalize(
+      Object.assign({}, ...this.cli_maker["C编译选项"].get("-V").input_args)[
+      "path"
+      ][1] + "/bin",
+    ).replaceAll("\\", "/");
+    const options = {
+      C编译选项: [],
+      Asm编译选项: [],
+      链接选项: [],
+      输出选项: [],
+      Lib选项: [],
+    };
+
+    for (const item of this.projectTypeMap[this.projectType]) {
+      for (const key of this.cli_maker[item].activet_options) {
+        const value = this.cli_maker[item].options.get(key);
+        if (item === "C编译选项" && key === "-I") continue;
+        if (item === "Asm编译选项" && key === "-I") continue;
+        options[item].push(value.compileOptionOutputCli());
+      }
+    }
+    const c_compiler_options = options["C编译选项"].join(" ");
+    const asm_compiler_options = options["Asm编译选项"].join(" ");
+    const link_options = options["链接选项"].join(" ");
+    const output_options = options["输出选项"].join(" ");
+    const lib_options = options["Lib选项"].join(" ");
+    const include_path_list = Object.assign(
+      {},
+      ...this.cli_maker["C编译选项"].options.get("-I").input_args,
+    )["dir"];
+    let include_path = "";
+    if (include_path_list.length === 0) {
+      include_path = "";
+    } else {
+      include_path =
+        "    ${CMAKE_SOURCE_DIR}/" +
+        include_path_list.join("\n    ${CMAKE_SOURCE_DIR}/");
+    }
+
+    const ejs_value = {
+      c_compiler_options,
+      asm_compiler_options,
+      link_options,
+      output_options,
+      lib_options,
+      include_path,
+      ccrh_toolchain_path,
+      float_mode,
+    };
+    const root = getContext().extensionPath;
+    const workspace = vscode.workspace.workspaceFolders[0].uri.fsPath;
+
+    const file_list = [
+      "CMakeLists.txt",
+      "cmake/cross.cmake",
+      "cmake/Config.cmake",
+      "cmake/GeneratedCfg.cmake",
+      "cmake/GeneratedSrc.cmake",
+    ];
+
+    for (const file of file_list) {
+      fs.mkdirSync(path.dirname(path.join(workspace, file)), { recursive: true });
+      const read_template = fs.readFileSync(
+        path.join(root, "data-views", "template", file),
+        "utf-8")
+
+      if (read_template) {
+        const write_template = ejs.render(read_template, ejs_value);
+        console.log(write_template);
+        fs.writeFileSync(path.join(workspace, file), write_template);
+      }
+    }
+
+    const configers = vscode.workspace.getConfiguration("cmake");
+    configers.update("configureSettings", {
+      "CMAKE_TOOLCHAIN_FILE": "${workspaceFolder}/cmake/cross.cmake",
+      "CMAKE_TOOLS_FOLDER": "${command:renesas.utilities.folder}/tools",
+    })
+    configers.update("sourceDirectory", "${workspaceFolder}");
+    configers.update("preferredGenerators", [
+      "Ninja",
+      "MinGW Makefiles",
+      "Unix Makefiles"
+    ]);
+    configers.update("configureOnOpen", true);
   }
 }
 
 module.exports = {
   RenesasMtpjParser,
+  setContext,
+  getContext,
 };

@@ -9,7 +9,7 @@ const search_file = require("./src/search_file");
 
 // ── Renesas CSP2CMake ──────────────────────────────────────
 const renesasMtpj = require("./data-views/renesas-mtpj");
-
+const {setContext} = require('./data-views/renesas-cli-parse')
 /**
  * @param {vscode.ExtensionContext} context
  */
@@ -17,9 +17,9 @@ function activate(context) {
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
 	console.log(
-		'Congratulations, your extension "cdtheadlessbuild" is now active!',
+		'Congratulations, your extension "cdtheadlessbuild" is now active!'
 	);
-
+	setContext(context);
 	// ── Eclipse CDT (existing) ──────────────────────────────
 	search_file.getProjectConfig();
 

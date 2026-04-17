@@ -5,10 +5,14 @@
             "type": "boolean",
             "required": [],
             "minVersion": "",
-            "args": [],
+            "args": [
+                "version",
+                "path"
+            ],
             "format": "-V",
             "PEonly": false,
-            "maxVersion": ""
+            "maxVersion": "",
+            "switch": "false"
         },
         "-h": {
             "description": "显示帮助信息",
@@ -18,7 +22,8 @@
             "args": [],
             "format": "-h",
             "PEonly": false,
-            "maxVersion": ""
+            "maxVersion": "",
+            "switch": "false"
         },
         "-o": {
             "description": "指定输出文件",
@@ -41,7 +46,7 @@
             "args": [
                 "path"
             ],
-            "switch": "<%= path != '' %>",
+            "switch": "false",
             "format": "-Xobj_path=<%= path %>",
             "PEonly": false,
             "maxVersion": ""
@@ -53,9 +58,9 @@
             "minVersion": "",
             "args": [
                 "path",
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-Xasm_path=<%= path %>",
             "PEonly": false,
             "maxVersion": ""
@@ -68,7 +73,7 @@
             "args": [
                 "path"
             ],
-            "switch": "<%= path != '' %>",
+            "switch": "false",
             "format": "-Xprep_path=<%= path %>",
             "PEonly": false,
             "maxVersion": ""
@@ -79,9 +84,9 @@
             "required": [],
             "minVersion": "",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-g",
             "PEonly": false,
             "maxVersion": ""
@@ -91,14 +96,14 @@
             "type": "boolean",
             "required": {
                 "-g": {
-                    "switch": true
+                    "toggle": true
                 }
             },
             "minVersion": "V1.05.00",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-g_line",
             "PEonly": false,
             "maxVersion": ""
@@ -144,9 +149,9 @@
             "required": [],
             "minVersion": "",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-P",
             "PEonly": false,
             "maxVersion": ""
@@ -167,10 +172,10 @@
             "required": [],
             "minVersion": "",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch != '' %>",
-            "format": "<%= switch %>",
+            "switch": "<%= toggle != '' %>",
+            "format": "<%= toggle %>",
             "PEonly": false,
             "maxVersion": ""
         },
@@ -182,7 +187,7 @@
             "args": [
                 "macro"
             ],
-            "switch": "<%= macro.length > 0 %>",
+            "switch": "<%= macro.map((i) => i!='').some(Boolean) %>",
             "format": "-D<%= macro.join(',') %>",
             "PEonly": false,
             "maxVersion": ""
@@ -195,7 +200,7 @@
             "args": [
                 "macro"
             ],
-            "switch": "<%= macro.length > 0 %>",
+            "switch": "<%= macro.map((i) => i!='').some(Boolean) %>",
             "format": "-U<%= macro.join(',') %>",
             "PEonly": false,
             "maxVersion": ""
@@ -206,10 +211,11 @@
             "required": [],
             "minVersion": "",
             "args": [
-                "dir"
+                "dir",
+                "sysdir"
             ],
-            "switch": "<%= dir.length > 0 %>",
-            "format": "-I<%= dir.join(',') %>",
+            "switch": "<%= dir.map((i) => i!='').some(Boolean) || sysdir.map((i) => i!='').some(Boolean)%>",
+            "format": "-I<%= [...dir,...sysdir].join(',') %>",
             "PEonly": false,
             "maxVersion": ""
         },
@@ -221,7 +227,7 @@
             "args": [
                 "file"
             ],
-            "switch": "<%= file.length > 0 %>",
+            "switch": "<%= file.map((i) => i!='').some(Boolean) %>",
             "format": "-Xpreinclude=<%= file.join(',') %>",
             "PEonly": false,
             "maxVersion": ""
@@ -231,7 +237,7 @@
             "type": "string",
             "required": {
                 "-P": {
-                    "switch": true
+                    "toggle": true
                 }
             },
             "minVersion": "",
@@ -239,12 +245,8 @@
                 "comment",
                 "line"
             ],
-            "args_valid": {
-                "comment": "comment",
-                "line": "line"
-            },
-            "switch": "<%= (comment || line) != '' %>",
-            "format": "-Xpreprocess=<%= [comment, line].filter(Boolean).join(',') %>",
+            "switch": "<%= (comment || line) %>",
+            "format": "-Xpreprocess=<%= (comment && !line) ? 'comment' : (!comment && line) ? 'line' : 'comment,line' %>",
             "PEonly": false,
             "maxVersion": ""
         },
@@ -273,9 +275,9 @@
             "required": [],
             "minVersion": "V1.07.00",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-strict_std",
             "PEonly": false,
             "maxVersion": ""
@@ -288,9 +290,9 @@
             "minVersion": "",
             "maxVersion": "V1.06.00",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-Xansi"
         },
         "-Xenum_type": {
@@ -318,9 +320,9 @@
             "required": [],
             "minVersion": "",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-Xvolatile",
             "PEonly": false,
             "maxVersion": ""
@@ -334,12 +336,12 @@
                 "comp"
             ],
             "args_valid": {
-                "check_option": [
-                    "none",
-                    "xcheck"
+                "comp": [
+                    "None",
+                    "Xcheck"
                 ]
             },
-            "switch": "<%= comp === 'xcheck' %>",
+            "switch": "<%= comp === 'Xcheck' %>",
             "format": "-Xcheck=shc",
             "PEonly": false,
             "maxVersion": ""
@@ -421,35 +423,39 @@
         "-Xignore_files_misra": {
             "description": "指定不进行MISRA检查的文件",
             "type": "string",
-            "required": {
-                "-Xmisra2004": {
-                    "item": [
-                        "all",
-                        "apply",
-                        "ignore",
-                        "required",
-                        "requiredadd",
-                        "requiredremove",
-                        "specifiesfile"
-                    ]
+            "required": [
+                {
+                    "-Xmisra2004": {
+                        "item": [
+                            "all",
+                            "apply",
+                            "ignore",
+                            "required",
+                            "requiredadd",
+                            "requiredremove",
+                            "specifiesfile"
+                        ]
+                    }
                 },
-                "-Xmisra2012": {
-                    "item": [
-                        "all",
-                        "apply",
-                        "ignore",
-                        "required",
-                        "requiredadd",
-                        "requiredremove",
-                        "specifiesfile"
-                    ]
+                {
+                    "-Xmisra2012": {
+                        "item": [
+                            "all",
+                            "apply",
+                            "ignore",
+                            "required",
+                            "requiredadd",
+                            "requiredremove",
+                            "specifiesfile"
+                        ]
+                    }
                 }
-            },
+            ],
             "minVersion": "",
             "args": [
                 "file_list"
             ],
-            "switch": "<%= file_list.length > 0 %>",
+            "switch": "<%= file_list.map((i) => i!='').some(Boolean) %>",
             "format": "-Xignore_files_misra=<%= file_list.join(',') %>",
             "PEonly": true,
             "maxVersion": ""
@@ -457,51 +463,79 @@
         "-Xcheck_language_extension": {
             "description": "检查语言扩展",
             "type": "boolean",
-            "required": {
-                "-Xmisra2004": {
-                    "item": [
-                        "all",
-                        "apply",
-                        "ignore",
-                        "required",
-                        "requiredadd",
-                        "requiredremove",
-                        "specifiesfile"
-                    ]
+            "required": [
+                {
+                    "-Xmisra2004": {
+                        "item": [
+                            "all",
+                            "apply",
+                            "ignore",
+                            "required",
+                            "requiredadd",
+                            "requiredremove",
+                            "specifiesfile"
+                        ]
+                    }
                 },
-                "-Xmisra2012": {
-                    "item": [
-                        "all",
-                        "apply",
-                        "ignore",
-                        "required",
-                        "requiredadd",
-                        "requiredremove",
-                        "specifiesfile"
-                    ]
+                {
+                    "-Xmisra2012": {
+                        "item": [
+                            "all",
+                            "apply",
+                            "ignore",
+                            "required",
+                            "requiredadd",
+                            "requiredremove",
+                            "specifiesfile"
+                        ]
+                    }
                 }
-            },
+            ],
             "minVersion": "",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-Xcheck_language_extension",
             "PEonly": true,
             "maxVersion": ""
         },
         "-misra_intermodule": {
-            "description": "启用MISRA C:2012跨模块检查",
+            "description": "启用MISRA C跨模块检查",
             "type": "boolean",
             "required": [
-                "-Xmisra2004",
-                "-Xmisra2012"
+                {
+                    "-Xmisra2004": {
+                        "item": [
+                            "all",
+                            "apply",
+                            "ignore",
+                            "required",
+                            "requiredadd",
+                            "requiredremove",
+                            "specifiesfile"
+                        ]
+                    }
+                },
+                {
+                    "-Xmisra2012": {
+                        "item": [
+                            "all",
+                            "apply",
+                            "ignore",
+                            "required",
+                            "requiredadd",
+                            "requiredremove",
+                            "specifiesfile"
+                        ]
+                    }
+                }
             ],
             "minVersion": "V2.01.00",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-misra_intermodule=${PROJECT_NAME}.mi",
             "PEonly": true,
             "maxVersion": ""
@@ -510,16 +544,24 @@
             "description": "启用对半精度浮点数的支持",
             "type": "boolean",
             "required": {
-                "-strict_std": true,
-                "-Xcpu": "g3k",
-                "-Xfloat": "soft",
-                "-Xround": "zero"
+                "-strict_std": {
+                    "toggle": true
+                },
+                "-Xcpu": {
+                    "core": "g3k"
+                },
+                "-Xfloat": {
+                    "value": "soft"
+                },
+                "-Xround": {
+                    "value": "zero"
+                }
             },
             "minVersion": "V1.05.00",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-Xuse_fp16",
             "PEonly": true,
             "maxVersion": ""
@@ -614,14 +656,14 @@
         "-Oinline_size": {
             "description": "指定内联函数的最大代码大小",
             "type": "string",
-            "required": [
-                {
-                    "-Oinline": "autodetect"
-                },
-                {
-                    "-O": "advancedspeed"
+            "required": {
+                "-Oinline": {
+                    "value": [
+                        "autodetect",
+                        "advancedspeed"
+                    ]
                 }
-            ],
+            },
             "minVersion": "",
             "args": [
                 "size"
@@ -657,7 +699,9 @@
             "description": "删除未被调用的静态函数",
             "type": "string",
             "required": {
-                "-O": "advanceddebug"
+                "-O": {
+                    "level": "advanceddebug"
+                }
             },
             "minVersion": "",
             "args": [
@@ -702,14 +746,14 @@
         "-Otail_call": {
             "description": "启用尾调用优化",
             "type": "string",
-            "required": [
-                {
-                    "-O": "advancedspeed"
-                },
-                {
-                    "-O": "advancedsize"
+            "required": {
+                "-O": {
+                    "level": [
+                        "advancedspeed",
+                        "advancedsize"
+                    ]
                 }
-            ],
+            },
             "minVersion": "",
             "args": [
                 "value"
@@ -753,17 +797,15 @@
         "-Oalign": {
             "description": "指定数据对齐方式",
             "type": "string",
-            "required": [
-                {
-                    "-O": "advancedspeed"
+            "required": {
+                "-O": {
+                    "level": [
+                        "advancedspeed",
+                        "advancedsize"
+                    ]
                 },
-                {
-                    "-O": "advancedsize"
-                },
-                {
-                    "-stuff": false
-                }
-            ],
+                "-stuff": false
+            },
             "minVersion": "V2.03.00",
             "args": [
                 "value"
@@ -816,9 +858,9 @@
             },
             "minVersion": "",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-Xinline_strcpy",
             "PEonly": false,
             "maxVersion": ""
@@ -829,9 +871,9 @@
             "required": [],
             "minVersion": "",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-Xmerge_string",
             "PEonly": false,
             "maxVersion": ""
@@ -842,9 +884,9 @@
             "required": [],
             "minVersion": "",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-Xalias=ansi",
             "PEonly": false,
             "maxVersion": ""
@@ -875,9 +917,9 @@
             "required": [],
             "minVersion": "",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-goptimize",
             "PEonly": false,
             "maxVersion": ""
@@ -931,9 +973,9 @@
             "required": [],
             "minVersion": "",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-Xpass_source",
             "PEonly": false,
             "maxVersion": ""
@@ -948,7 +990,7 @@
             ],
             "args_valid": {
                 "value": [
-                    "none",
+                    "auto",
                     "ifelsestatement",
                     "binarysearch",
                     "tablejump"
@@ -957,7 +999,7 @@
                 "binarysearch": "binary",
                 "tablejump": "table"
             },
-            "switch": "<%= value != 'none' %>",
+            "switch": "<%= value != 'auto' %>",
             "format": "-Xswitch=<%= value %>",
             "PEonly": false,
             "maxVersion": ""
@@ -990,9 +1032,9 @@
             "required": [],
             "minVersion": "",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-Xreserve_r2",
             "PEonly": false,
             "maxVersion": ""
@@ -1074,9 +1116,9 @@
             },
             "minVersion": "V2.00.00",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-Xfxu=on",
             "PEonly": false,
             "maxVersion": ""
@@ -1119,9 +1161,9 @@
             "required": [],
             "minVersion": "",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-Xdiv",
             "PEonly": false,
             "maxVersion": ""
@@ -1132,10 +1174,10 @@
             "required": [],
             "minVersion": "",
             "args": [
-                "switch",
+                "toggle",
                 "value"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-Xcheck_div_ov=<%= value %>",
             "PEonly": false,
             "maxVersion": ""
@@ -1165,9 +1207,9 @@
             "required": [],
             "minVersion": "",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-Xuse_fmaf",
             "PEonly": false,
             "maxVersion": ""
@@ -1178,9 +1220,9 @@
             "required": [],
             "minVersion": "V2.00.00",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-use_recipf",
             "PEonly": false,
             "maxVersion": ""
@@ -1191,9 +1233,9 @@
             "required": [],
             "minVersion": "V2.00.00",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-approximate",
             "PEonly": false,
             "maxVersion": ""
@@ -1204,9 +1246,9 @@
             "required": [],
             "minVersion": "",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-Xunordered_cmpf",
             "PEonly": false,
             "maxVersion": ""
@@ -1254,7 +1296,11 @@
         "-Xround": {
             "description": "此选项指定浮点常量的四舍五入模式。",
             "type": "string",
-            "required": [],
+            "required": {
+                "-Xfloat": {
+                    "value": "fpu"
+                }
+            },
             "minVersion": "",
             "args": [
                 "value"
@@ -1382,9 +1428,9 @@
             "required": [],
             "minVersion": "V2.03.00",
             "args": [
-                "const"
+                "toggle"
             ],
-            "switch": "<%= const === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-stuff=const",
             "PEonly": false,
             "maxVersion": ""
@@ -1442,9 +1488,9 @@
             "maxVersion": "",
             "minVersion": "V1.07.00",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-pic -pirod"
         },
         "-pid": {
@@ -1455,9 +1501,9 @@
             "maxVersion": "",
             "minVersion": "V1.07.00",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-pid"
         },
         "-Xcref": {
@@ -1468,9 +1514,9 @@
             "maxVersion": "",
             "PEonly": false,
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-Xcref=${PROJECT_NAME}.cref"
         },
         "-Xerror_file": {
@@ -1481,10 +1527,10 @@
             "maxVersion": "",
             "PEonly": false,
             "args": [
-                "switch",
+                "toggle",
                 "file_name"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-Xerror_file=<%= file_name %>"
         },
         "-Xno_warning": {
@@ -1512,7 +1558,7 @@
                 "msg_id"
             ],
             "args_valid": {
-                "msg_id": [
+                "value": [
                     "No",
                     "All",
                     "Specified"
@@ -1531,9 +1577,9 @@
             "maxVersion": "",
             "PEonly": false,
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-Xasm_option=-Xasm_far_jump"
         },
         "-Xasm_option_prn_path": {
@@ -1544,10 +1590,10 @@
             "maxVersion": "",
             "PEonly": false,
             "args": [
-                "switch",
+                "toggle",
                 "path"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-Xasm_option=-Xprn_path=<%= path %>"
         }
     },
@@ -1560,10 +1606,10 @@
             "PEonly": false,
             "maxVersion": "",
             "args": [
-                "switch",
+                "toggle",
                 "value"
             ],
-            "switch": "<%= (switch === true && value != '') %>",
+            "switch": "<%= (toggle === true && value != '') %>",
             "format": "-cpu=<%= value %>"
         },
         "-debug": {
@@ -1616,9 +1662,9 @@
             "PEonly": false,
             "maxVersion": "",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-hide"
         },
         "-entry": {
@@ -1629,10 +1675,10 @@
             "PEonly": false,
             "maxVersion": "",
             "args": [
-                "switch",
+                "toggle",
                 "value"
             ],
-            "switch": "<%= (switch === true && value != '') %>",
+            "switch": "<%= (toggle === true && value != '') %>",
             "format": "-entry=<%= value %>"
         },
         "-input": {
@@ -1645,9 +1691,8 @@
             "args": [
                 "value"
             ],
-            "args_list_join": " ",
-            "switch": "<%= value != '' %>",
-            "format": "-input=<%= value %>"
+            "switch": "<%= value.map((i) => i!='').some(Boolean) %>",
+            "format": "-input=<%= value.join(',') %>"
         },
         "-library": {
             "description": "此选项指定输入库文件。",
@@ -1659,9 +1704,8 @@
             "args": [
                 "value"
             ],
-            "args_list_join": ",",
-            "switch": "<%= value != '' %>",
-            "format": "-library=<%= value %>"
+            "switch": "<%= value.map((i) => i!='').some(Boolean) %>",
+            "format": "-library=<%= value.join(',') %>"
         },
         "-library_std": {
             "description": "指定标准库函数的处理方式",
@@ -1695,10 +1739,10 @@
             "PEonly": false,
             "maxVersion": "",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
-            "format": "-library=v850e3v5\\${FLOAT_MODE}.lib"
+            "switch": "<%= toggle === true %>",
+            "format": "-library=\\\"${CMAKE_CCRH_LIB_PATH}/v850e3v5/${FLOAT_MODE}.lib\\\""
         },
         "-library_std_sec": {
             "description": "指定标准库内存安全的处理方式",
@@ -1708,7 +1752,7 @@
                     "value": "Use"
                 },
                 "library_std_math": {
-                    "switch": true
+                    "toggle": true
                 }
             },
             "minVersion": "",
@@ -1723,10 +1767,10 @@
                     "True"
                 ],
                 "False": "",
-                "True": "secure\\"
+                "True": "/secure"
             },
             "switch": "<%= value != '' %>",
-            "format": "-library=v850e3v5\\<%= value %>libmalloc.lib"
+            "format": "-library=\\\"${CMAKE_CCRH_LIB_PATH}<%= value %>/v850e3v5/libmalloc.lib\\\""
         },
         "-library_compatible_c": {
             "description": "指定标准库数学函数的处理方式",
@@ -1740,10 +1784,10 @@
             "PEonly": false,
             "maxVersion": "",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
-            "format": "-library=v850e3v5\\libc.lib"
+            "switch": "<%= toggle === true %>",
+            "format": "-library=\\\"${CMAKE_CCRH_LIB_PATH}/v850e3v5/libc.lib\\\""
         },
         "-library_compatible_m": {
             "description": "指定标准库数学函数的处理方式",
@@ -1757,10 +1801,10 @@
             "PEonly": false,
             "maxVersion": "",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
-            "format": "-library=v850e3v5\\libm.lib"
+            "switch": "<%= toggle === true %>",
+            "format": "-library=\\\"${CMAKE_CCRH_LIB_PATH}/v850e3v5/libm.lib\\\""
         },
         "-library_compatible_mf": {
             "description": "指定标准库数学函数的处理方式",
@@ -1774,10 +1818,10 @@
             "PEonly": false,
             "maxVersion": "",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
-            "format": "-library=v850e3v5\\libmf.lib"
+            "switch": "<%= toggle === true %>",
+            "format": "-library=\\\"${CMAKE_CCRH_LIB_PATH}/v850e3v5/libmf.lib\\\""
         },
         "-library_setjmp": {
             "description": "指定函数跳转的处理方式",
@@ -1794,10 +1838,10 @@
             "PEonly": false,
             "maxVersion": "",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
-            "format": "-library=v850e3v5\\libsetjmp.lib"
+            "switch": "<%= toggle === true %>",
+            "format": "-library=\\\"${CMAKE_CCRH_LIB_PATH}/v850e3v5/libsetjmp.lib\\\""
         },
         "-list": {
             "description": "此选项指定输出文件。",
@@ -1825,7 +1869,7 @@
         },
         "-list_show_symbol": {
             "description": "此选项指定输出文件。",
-            "type": "switch",
+            "type": "boolean",
             "required": {
                 "-list": {
                     "value": "List"
@@ -1835,14 +1879,14 @@
             "PEonly": false,
             "maxVersion": "",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-show=symbol"
         },
         "-list_show_reference": {
             "description": "此选项指定输出文件。",
-            "type": "switch",
+            "type": "boolean",
             "required": {
                 "-list": {
                     "value": "List"
@@ -1852,14 +1896,14 @@
             "PEonly": false,
             "maxVersion": "",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-show=reference"
         },
         "-list_show_section": {
             "description": "此选项指定输出文件。",
-            "type": "switch",
+            "type": "boolean",
             "required": {
                 "-list": {
                     "value": "List"
@@ -1869,14 +1913,14 @@
             "PEonly": false,
             "maxVersion": "",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-show=section"
         },
         "-list_show_xreference": {
             "description": "此选项指定输出文件。",
-            "type": "switch",
+            "type": "boolean",
             "required": {
                 "-list": {
                     "value": "List"
@@ -1886,14 +1930,14 @@
             "PEonly": false,
             "maxVersion": "",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-show=xreference"
         },
         "-list_show_total_size": {
             "description": "此选项指定输出文件。",
-            "type": "switch",
+            "type": "boolean",
             "required": {
                 "-list": {
                     "value": "List"
@@ -1903,14 +1947,14 @@
             "PEonly": false,
             "maxVersion": "",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-show=total_size"
         },
         "-list_show_struct": {
             "description": "此选项指定输出文件。",
-            "type": "switch",
+            "type": "boolean",
             "required": {
                 "-list": {
                     "value": "List"
@@ -1920,14 +1964,14 @@
             "PEonly": false,
             "maxVersion": "",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-show=struct"
         },
         "-list_show_relocation_attribute": {
             "description": "此选项指定输出文件。",
-            "type": "switch",
+            "type": "boolean",
             "required": {
                 "-list": {
                     "value": "List"
@@ -1937,14 +1981,14 @@
             "PEonly": false,
             "maxVersion": "",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-show=relocation_attribute"
         },
         "-list_show_cfi": {
             "description": "此选项指定输出文件。",
-            "type": "switch",
+            "type": "boolean",
             "required": {
                 "-list": {
                     "value": "List"
@@ -1954,9 +1998,9 @@
             "PEonly": false,
             "maxVersion": "",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-show=cfi"
         },
         "-start": {
@@ -2008,8 +2052,8 @@
             "args": [
                 "value"
             ],
-            "switch": "<%= value != '' %>",
-            "format": "-rom=<%= value %>"
+            "switch": "<%= value.map((i) => i!='').some(Boolean) %>",
+            "format": "-rom=<%= value.filter((i)=> i!='').join(',') %>"
         },
         "-message": {
             "description": "此选项会输出信息消息。",
@@ -2019,35 +2063,35 @@
             "PEonly": false,
             "maxVersion": "",
             "args": [
-                "switch",
+                "toggle",
                 "value"
             ],
             "args_valid": {
-                "switch": [
+                "toggle": [
                     "True",
                     "False"
                 ],
                 "True": "-message",
-                "False": "-nomessage=<%= value %>"
+                "False": "-nomessage<%= value != '' ? '=' + value : '' %>"
             },
             "switch": "true",
-            "format": "<%= switch %>"
+            "format": "<%= toggle %>"
         },
         "-msg_unused": {
             "description": "此选项通知用户外部定义的符号未被引用。",
             "type": "boolean",
             "required": {
                 "-message": {
-                    "switch": "True"
+                    "toggle": "True"
                 }
             },
             "minVersion": "",
             "PEonly": false,
             "maxVersion": "",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-msg_unused"
         },
         "-change_message_info": {
@@ -2127,9 +2171,9 @@
             "PEonly": false,
             "maxVersion": "",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-stack"
         },
         "-memory": {
@@ -2140,18 +2184,18 @@
             "PEonly": false,
             "maxVersion": "",
             "args": [
-                "switch"
+                "toggle"
             ],
             "args_valid": {
-                "switch": [
+                "toggle": [
                     "True",
                     "False"
                 ],
                 "True": "-memory=low",
                 "False": "-memory=higt"
             },
-            "switch": "<%= switch === true %>",
-            "format": "<%= switch %>"
+            "switch": "<%= toggle === 'True' %>",
+            "format": "<%= toggle %>"
         },
         "-total_size": {
             "description": "此选项在链接到标准错误输出后显示段落的总大小。",
@@ -2161,9 +2205,9 @@
             "PEonly": false,
             "maxVersion": "",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-total_size"
         },
         "-logo": {
@@ -2174,18 +2218,18 @@
             "PEonly": false,
             "maxVersion": "",
             "args": [
-                "switch"
+                "toggle"
             ],
             "args_valid": {
-                "switch": [
+                "toggle": [
                     "True",
                     "False"
                 ],
                 "True": "-logo",
                 "False": "-nologo"
             },
-            "switch": "<%= switch === true %>",
-            "format": "<%= switch %>"
+            "switch": "<%= toggle === 'True' %>",
+            "format": "<%= toggle %>"
         },
         "-map": {
             "description": "此选项在链接到标准错误输出后显示段落的总大小。",
@@ -2195,9 +2239,9 @@
             "PEonly": false,
             "maxVersion": "",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-map=${PROJECT_NAME}.bls"
         },
         "-output": {
@@ -2212,7 +2256,7 @@
                 "folder"
             ],
             "switch": "<%= file != '' %>",
-            "format": "-output=<%= folder %>\\<%= file %>"
+            "format": "-output=${PROJECT_NAME}.abs"
         },
         "-allow_duplicate_module_name": {
             "description": "此选项允许重复模块名称。",
@@ -2222,9 +2266,9 @@
             "PEonly": false,
             "maxVersion": "",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-allow_duplicate_module_name"
         }
     },
@@ -2244,13 +2288,13 @@
             "PEonly": false,
             "maxVersion": "",
             "args": [
-                "switch",
+                "toggle",
                 "file",
                 "address",
                 "folder"
             ],
-            "switch": "<%= switch === true %>",
-            "format": "-output=<%= folder %>\\<%= file %>/<%= address %>"
+            "switch": "<%= toggle === true %>",
+            "format": "-output=${PROJECT_NAME}.<%= file.split('.')[1] %><%= address ? '/' + address : '' %>"
         },
         "-output_default_b": {
             "description": "此选项指定默认输出格式。",
@@ -2264,12 +2308,12 @@
             "PEonly": false,
             "maxVersion": "",
             "args": [
-                "switch",
+                "toggle",
                 "file",
                 "folder"
             ],
-            "switch": "<%= switch === true %>",
-            "format": "-output=<%= folder %>\\<%= file %>"
+            "switch": "<%= toggle === true %>",
+            "format": "-output=${PROJECT_NAME}.<%= file.split('.')[1] %>"
         },
         "-output_division": {
             "description": "此选项指定默认输出格式。",
@@ -2281,7 +2325,7 @@
             "args": [
                 "value"
             ],
-            "switch": "<%= value != '' %>",
+            "switch": "<%= value.map((i) => i!='').some(Boolean) %>",
             "format": "-output=<%= value.join(' -output=') %>"
         },
         "-form": {
@@ -2360,10 +2404,10 @@
             "PEonly": false,
             "maxVersion": "",
             "args": [
-                "switch",
+                "toggle",
                 "value"
             ],
-            "switch": "<%= (switch === true && value != '') %>",
+            "switch": "<%= (toggle === true && value != '') %>",
             "format": "-fix_record_length_and_align=<%= value %>"
         },
         "-byte_count": {
@@ -2381,10 +2425,10 @@
             "PEonly": false,
             "maxVersion": "",
             "args": [
-                "switch",
+                "toggle",
                 "value"
             ],
-            "switch": "<%= (switch === true && value != '') %>",
+            "switch": "<%= (toggle === true && value != '') %>",
             "format": "-byte_count=<%= value %>"
         },
         "-end_record": {
@@ -2424,9 +2468,9 @@
             "PEonly": false,
             "maxVersion": "",
             "args": [
-                "switch"
+                "toggle"
             ],
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-s9"
         },
         "-crc": {
@@ -2437,7 +2481,7 @@
             "PEonly": false,
             "maxVersion": "",
             "args": [
-                "switch",
+                "toggle",
                 "out_address",
                 "range",
                 "type",
@@ -2471,13 +2515,17 @@
                 "Little": "LITTLE",
                 "Big": "BIG"
             },
-            "switch": "<%= switch === true %>",
+            "switch": "<%= toggle === true %>",
             "format": "-crc=<%= out_address %>=<%= range %>/<%= type %>(<%= initial_value %>):<%= ending %>-<%= out_size %>-0"
         },
         "-verbose": {
             "description": "This option displays detailed information in the standard error output.",
             "type": "boolean",
-            "required": [],
+            "required": {
+                "-crc": {
+                    "toggle": true
+                }
+            },
             "minVersion": "V2.03.00",
             "PEonly": false,
             "maxVersion": "",

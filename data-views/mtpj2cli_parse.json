@@ -1,5 +1,15 @@
 {
     "Compile": {
+        "LastCompilerVersion":{
+            "cli_option": "-V",
+            "arg": "version",
+            "type": "string"
+        },
+        "CompilerVersion":{
+            "cli_option": "-V",
+            "arg": "path",
+            "type": "list"
+        },
         "GeneralOptionXobjPath": {
             "cli_option": "-Xobj_path",
             "arg": "path",
@@ -7,7 +17,7 @@
         },
         "COptionXasmPath": {
             "cli_option": "-Xasm_path",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "COptionXasmPathValue": {
@@ -22,12 +32,12 @@
         },
         "COptionG": {
             "cli_option": "-g",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "COptionGLine": {
             "cli_option": "-g_line",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "GeneralOptionXcommon": {
@@ -44,12 +54,12 @@
         },
         "COptionP": {
             "cli_option": "-P",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "COptionMOrC": {
             "cli_option": "-c",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "string"
         },
         "COptionD": {
@@ -69,13 +79,13 @@
         },
         "COptionISystem": {
             "cli_option": "-I",
-            "arg": "dir",
+            "arg": "sysdir",
             "type": "list"
         },
         "COptionXpreinclude": {
             "cli_option": "-Xpreinclude",
             "arg": "file",
-            "type": "string-env"
+            "type": "list"
         },
         "COptionXpreprocessComment": {
             "cli_option": "-Xpreprocess",
@@ -95,12 +105,12 @@
         },
         "COptionStrictStd": {
             "cli_option": "-strict_std",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "COptionXansi": {
             "cli_option": "-Xansi",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "COptionXenumType": {
@@ -111,7 +121,7 @@
         },
         "COptionXvolatile": {
             "cli_option": "-Xvolatile",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "COptionXcheck": {
@@ -188,17 +198,17 @@
         },
         "COptionXcheckLanguageExtension": {
             "cli_option": "-Xcheck_language_extension",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "COptionMisraIntermodule": {
             "cli_option": "-misra_intermodule",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "COptionXuseFp16": {
             "cli_option": "-Xuse_fp16",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "COptionXcharacterSet": {
@@ -256,7 +266,8 @@
         "COptionMap": {
             "cli_option": "-map",
             "arg": "value",
-            "type": "string"
+            "type": "string",
+            "rule": "lowercase"
         },
         "COptionXintermodule": {
             "cli_option": "-intermodule",
@@ -266,17 +277,17 @@
         },
         "COptionXinlineStrcpy": {
             "cli_option": "-Xinline_strcpy",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "COptionXmergeString": {
             "cli_option": "-Xmerge_string",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "COptionXaliasAnsi": {
             "cli_option": "-Xalias",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "COptionLibraryIntrinsic": {
@@ -287,7 +298,7 @@
         },
         "COptionGoptimize": {
             "cli_option": "-goptimize",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "COptionXpack": {
@@ -304,7 +315,7 @@
         },
         "COptionXpassSource": {
             "cli_option": "-Xpass_source",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "COptionXswitch": {
@@ -321,7 +332,7 @@
         },
         "GeneralOptionXreserveR2": {
             "cli_option": "-Xreserve_r2",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "GeneralOptionR4": {
@@ -344,7 +355,7 @@
         },
         "COptionXfxu": {
             "cli_option": "-Xfxu",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "COptionXcallJump": {
@@ -359,12 +370,12 @@
         },
         "COptionXdiv": {
             "cli_option": "-Xdiv",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "COptionXcheckDivOv": {
             "cli_option": "-Xcheck_div_ov",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "COptionXcheckDivOvValue": {
@@ -379,22 +390,22 @@
         },
         "COptionXuseFmaf": {
             "cli_option": "-Xuse_fmaf",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "COptionUseRecipf": {
             "cli_option": "-use_recipf",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "COptionApproximate": {
             "cli_option": "-approximate",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "COptionXunorderedCmpf": {
             "cli_option": "-Xunordered_cmpf",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "COptionXmultiLevel": {
@@ -439,7 +450,7 @@
         },
         "COptionStuffConst": {
             "cli_option": "-stuff_const",
-            "arg": "const",
+            "arg": "toggle",
             "type": "boolean"
         },
         "COptionStoreReg": {
@@ -454,22 +465,22 @@
         },
         "GeneralOptionPICPIROD": {
             "cli_option": "-pic",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "GeneralOptionPID": {
             "cli_option": "-pid",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "GeneralOptionXcref": {
             "cli_option": "-Xcref",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "GeneralOptionXerrorFile": {
             "cli_option": "-Xerror_file",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "GeneralOptionXerrorFileName": {
@@ -496,12 +507,12 @@
     "Assemble": {
         "AsmOptionGoptimize": {
             "cli_option": "-goptimize",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "COptionG": {
             "cli_option": "-g",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "GeneralOptionCoreCPU": {
@@ -517,7 +528,7 @@
         },
         "COptionISystem": {
             "cli_option": "-I",
-            "arg": "dir",
+            "arg": "sysdir",
             "type": "list"
         },
         "COptionD": {
@@ -532,7 +543,7 @@
         },
         "AsmOptionMMOrC": {
             "cli_option": "-c",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "string"
         },
         "COptionXcharacterSet": {
@@ -543,12 +554,12 @@
         },
         "COptionXasmFarJump": {
             "cli_option": "-Xasm_option_asm_for_jump",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "COptionXprnPath": {
             "cli_option": "-Xasm_option_prn_path",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "COptionXprnPathValue": {
@@ -566,7 +577,7 @@
     "Link": {
         "LinkOptionCpu": {
             "cli_option": "-cpu",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "LinkOptionCpuInformation": {
@@ -586,12 +597,12 @@
         },
         "LinkOptionHide": {
             "cli_option": "-hide",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "LinkOptionEntry": {
             "cli_option": "-entry",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "LinkOptionEntryPoint": {
@@ -616,7 +627,7 @@
         },
         "LinkOptionLibraryStandardMathematics": {
             "cli_option": "-library_std_math",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "LinkOptionLibraryLibMalloc": {
@@ -626,22 +637,22 @@
         },
         "LinkOptionLibraryLibC": {
             "cli_option": "-library_compatible_c",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "LinkOptionLibraryLibM": {
             "cli_option": "-library_compatible_m",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "LinkOptionLibraryLibMF": {
             "cli_option": "-library_compatible_mf",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "LinkOptionLibraryLibSetJmp": {
             "cli_option": "-library_setjmp",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "LinkOptionListShow": {
@@ -651,37 +662,37 @@
         },
         "LinkOptionShowSymbol": {
             "cli_option": "-list_show_symbol",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "LinkOptionShowReference": {
             "cli_option": "-list_show_reference",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "LinkOptionShowXreference": {
             "cli_option": "-list_show_xreference",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "LinkOptionShowTotalSize": {
             "cli_option": "-list_show_total_size",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "LinkOptionShowStruct": {
             "cli_option": "-list_show_struct",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "LinkOptionShowRelocationAttribute": {
             "cli_option": "-list_show_relocation_attribute",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "LinkOptionShowCFI": {
             "cli_option": "-list_show_cfi",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "LinkOptionStart": {
@@ -702,11 +713,11 @@
         "LinkOptionRom": {
             "cli_option": "-rom",
             "arg": "value",
-            "type": "string"
+            "type": "list"
         },
         "LinkOptionMessage": {
             "cli_option": "-message",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "string"
         },
         "LinkOptionNoMessageErrorNumber": {
@@ -716,7 +727,7 @@
         },
         "LinkOptionMsgUnused": {
             "cli_option": "-msg_unused",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "LinkOptionChangeMessageInformation": {
@@ -751,27 +762,27 @@
         },
         "LinkOptionStack": {
             "cli_option": "-stack",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "LinkOptionMemory": {
             "cli_option": "-memory",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "string"
         },
         "LinkOptionTotalSize": {
             "cli_option": "-total_size",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "LinkOptionLogo": {
             "cli_option": "-logo",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "string"
         },
         "LinkOptionMap": {
             "cli_option": "-map",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "LinkOptionOutputFolder": {
@@ -812,7 +823,7 @@
                 "-output_default_nb",
                 "-output_default_b"
             ],
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "HexOptionDivisionOutputFile": {
@@ -837,7 +848,7 @@
         },
         "HexOptionFixRecordLengthAndAlign": {
             "cli_option": "-fix_record_length_and_align",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "HexOptionFixRecordLengthAndAlignValue": {
@@ -847,7 +858,7 @@
         },
         "HexOptionByteCount": {
             "cli_option": "-byte_count",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "HexOptionByteCountValue": {
@@ -862,12 +873,12 @@
         },
         "HexOptionS9": {
             "cli_option": "-s9",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "HexOptionCrc": {
             "cli_option": "-crc",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "HexOptionCrcOutputAddress": {
@@ -909,7 +920,7 @@
     "Library": {
         "LibOptionHide": {
             "cli_option": "-hide",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "LibOptionInput": {
@@ -944,7 +955,7 @@
         },
         "LibOptionLibraryStandardMathematics": {
             "cli_option": "-library_std_math",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "LibOptionLibraryLibMalloc": {
@@ -954,27 +965,27 @@
         },
         "LibOptionLibraryLibC": {
             "cli_option": "-library_compatible_c",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "LibOptionLibraryLibM": {
             "cli_option": "-library_compatible_m",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "LibOptionLibraryLibMF": {
             "cli_option": "-library_compatible_mf",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "LibOptionLibraryLibSetJmp": {
             "cli_option": "-library_setjmp",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "LibOptionAllowDuplicateModuleName": {
             "cli_option": "-allow_duplicate_module_name",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "LibOptionListShow": {
@@ -984,22 +995,22 @@
         },
         "LibOptionShowSymbol": {
             "cli_option": "-list_show_symbol",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "LibOptionShowSection": {
             "cli_option": "-list_show_section",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "boolean"
         },
         "LibOptionLogo": {
             "cli_option": "-logo",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "string"
         },
         "LibOptionMessage": {
             "cli_option": "-message",
-            "arg": "switch",
+            "arg": "toggle",
             "type": "string"
         },
         "LibOptionNoMessageErrorNumber": {

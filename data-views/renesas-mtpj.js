@@ -171,17 +171,33 @@ class RenesasOptionClassItem extends vscode.TreeItem {
   /**
    * @param {object} src  { guid, type }
    */
-  constructor(name, data, idx, current_buildMode, projectName) {
-    super(name, Collapsed);
+  constructor(name, data) {
+    super(name, Expanded);
     this.data = data;
     this.name = name;
     this.contextValue = "sourceItem";
-    this.idx = idx;
-    this.currentBuildMode = current_buildMode;
-    this.projectName = projectName;
     // this.tooltip = `Type: ${src.type}`;
     // this.description = src.type;
     this.iconPath = new vscode.ThemeIcon("gear");
+  }
+}
+
+class RenesasOptionItem extends vscode.TreeItem {
+  /**
+   * @param {object} src  { guid, type }
+   */
+  constructor(name, obj, inactive) {
+    super(name, NoCollapsed);
+    this.obj = obj;
+    this.name = name;
+    this.contextValue = "optionItem";
+    this.tooltip = `${obj.compileOptionOutputCli()}`;
+    // this.description = src.type;
+    if (inactive) {
+      this.iconPath = new vscode.ThemeIcon("pass");
+    } else {
+      this.iconPath = new vscode.ThemeIcon("error");
+    }
   }
 }
 
@@ -208,74 +224,33 @@ class RenesasProjectTreeDataProvider {
         return items;
       }
       if (element instanceof RenesasBuildModeItem) {
-        // Third level: source items of the current project
-        const configers = globalMtpjConfig.find(
-          (p) => p.name === element.projectName,
-        );
-        const data_dict = {
-          C编译选项: [
-            "989d6783-59a0-4525-8ee4-a067fda90fe2",
-            "24e7db6c-6f3c-483e-b3af-c4be92050d3b",
-          ],
-          Asm编译选项: ["55f70bbd-5f8f-404f-854e-5da727c86621"],
-          链接选项: ["82d7e767-9e1b-43e5-a62d-4a892fa42000"],
-          输出选项: ["cd7ca0dd-4e03-43a0-b849-b72bd0bf0bd1"],
-          Lib选项: ["625fdef6-79e0-476f-ae26-6cde275afb59"],
-        };
-        const instances = configers.matched_class.Instance;
-        const buildMode_idx = configers.buildModes.filter(
-          (i) => i.name === configers.currentBuildMode,
-        )[0].index;
-        function check_prj_type() {
-          let instances = configers.matched_class.Instance;
-          if (instances) {
-            let gop = instances.filter(
-              (i) => i.$?.Guid === "989d6783-59a0-4525-8ee4-a067fda90fe2",
-            );
-            let attr = "GeneralOptionOutput-" + buildMode_idx;
-            let mode = gop[0][attr][0];
-            if (mode === "LibraryFile") {
-              return "lib";
-            } else {
-              return "exe";
-            }
-          }
-        }
-
-        function filter_data(data, guid) {
-          return data.filter((d) => guid.find((i) => i === d.$?.Guid));
-        }
-
-        let mode = check_prj_type();
-        if (mode === "exe") {
-          return ["C编译选项", "Asm编译选项", "链接选项", "输出选项"].map(
-            (m) =>
-              new RenesasOptionClassItem(
-                m,
-                filter_data(instances, data_dict[m]),
-                buildMode_idx,
-                element.label,
-                element.projectName,
-              ),
-          );
-        } else if (mode === "lib") {
-          return ["C编译选项", "Asm编译选项", "Lib选项"].map(
-            (m) =>
-              new RenesasOptionClassItem(
-                m,
-                filter_data(instances, data_dict[m]),
-                buildMode_idx,
-                element.label,
-                element.projectName,
-              ),
+        if (currentProjectParser.data.currentBuildMode == element.mode.name) {
+          return currentProjectParser.projectTypeMap[
+            currentProjectParser.data.projectType
+          ].map(
+            (m) => new RenesasOptionClassItem(m, currentProjectParser.data),
           );
         }
+        return [];
       }
       if (element instanceof RenesasOptionClassItem) {
-        const configers = globalMtpjConfig.find(
-          (p) => p.name === element.projectName,
-        );
-        return currentProjectParser.parseMtpjXmlObj(element);
+        if (
+          currentProjectParser.data.currentBuildMode ==
+          element.data.currentBuildMode
+        ) {
+          const activeOptions =
+            currentProjectParser.cli_maker[element.name].activet_options;
+          const options = currentProjectParser.cli_maker[element.name].options;
+          let res = [];
+          options.forEach((value,key) => {
+            if (activeOptions.includes(key)) {
+              res.push(new RenesasOptionItem(key, value, true));
+            } else {
+              // res.push(new RenesasOptionItem(key, value, false));
+            }
+          });
+          return res;
+        }
       }
       return [];
     }
@@ -324,7 +299,7 @@ class RenesasBuildModeTreeDataProvider {
       // Root: single node for the current project
       const result = [];
       for (const proj of globalMtpjConfig) {
-        result.push(new RenesasProjectItem(proj));
+        result.push(new RenesasProjectItem(proj,"",true));
       }
       if (result.length === 1) {
         currentProject = result[0];
@@ -351,6 +326,7 @@ async function refreshAll() {
     const data = parseMtpjFile(fp);
     if (data) globalMtpjConfig.push(data);
   }
+  globalMtpjConfig.sort((a, b) => a.name.localeCompare(b.name)); // sort alphabetically
   console.log(
     "[RenesasMtpj] Scanned projects:",
     globalMtpjConfig.map((p) => p.name),
@@ -359,7 +335,8 @@ async function refreshAll() {
   // Auto-select first project if none selected
   if (!currentProject && globalMtpjConfig.length > 0) {
     globalMtpjConfig.sort((a, b) => a.name.localeCompare(b.name)); // sort alphabetically
-    currentProject = globalMtpjConfig[0];
+    if (globalMtpjConfig.length == 1)
+      currentProject = globalMtpjConfig[0];
   }
 
   if (buildModeProvider) buildModeProvider.refresh();
@@ -371,11 +348,13 @@ async function refreshAll() {
 // ─────────────────────────────────────────────────────────────
 
 /** Build the selected project using the current build mode */
-const buildProject = (element) => {
+const buildProject = async (element) => {
+  await refreshAll()
   if (element instanceof RenesasBuildModeItem) {
     currentProject = globalMtpjConfig.filter(
       (p) => p.name === element.projectName,
     )[0];
+    currentProjectParser.parseMtpjXmlObj(currentProject);
     if (projectProvider) projectProvider.refresh();
   }
   const data = element;
@@ -383,6 +362,7 @@ const buildProject = (element) => {
     `[Renesas Build] ${data.projectName}.mtpj  Current Build Mode: ${data.label}`,
   );
   // TODO: wire up actual build command (CS+ headless invocation)
+  currentProjectParser.generateCmakeCli();
   console.log(
     "[Renesas Build] Triggered for:",
     data.name,

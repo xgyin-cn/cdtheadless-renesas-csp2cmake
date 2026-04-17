@@ -1,13 +1,19 @@
 {
-  "name": "cdtheadlessbuild",
-  "displayName": "cdtheadlessbuild",
-  "description": "A tool to use CDT headless build mode",
-  "version": "0.0.2",
+  "name": "cdtheadlessbuild-renesascsp2cmake",
+  "displayName": "cdtheadlessbuild-renesascsp2cmake",
+  "publisher": "wwz",
+  "description": "A tool to use CDT headless build mode and Renesas CS+ translate to CMake",
+  "version": "0.0.4",
   "engines": {
     "vscode": "^1.95.0"
   },
   "categories": [
     "Other"
+  ],
+  "extensionDependencies": [
+    "twxs.cmake",
+    "ms-vscode.cmake-tools",
+    "renesaselectronicscorporation.renesas-build-utilities"
   ],
   "activationEvents": [
     "workspaceContains:**/.project",
@@ -134,21 +140,33 @@
         }
       ]
     },
-    "configuration": {
-      "title": "Eclipse CDT Configurations",
-      "properties": {
-        "cdtheadlessbuild.launchPath": {
-          "type": "string",
-          "default": "",
-          "description": "设置Eclipse启动路径"
-        },
-        "cdtheadlessbuild.argsAdded": {
-          "type": "array",
-          "default": [],
-          "description": "设置Eclipse启动 附加参数"
+    "configuration": [
+      {
+        "title": "Eclipse CDT Configurations",
+        "properties": {
+          "cdtheadlessbuild.launchPath": {
+            "type": "string",
+            "default": "",
+            "description": "设置Eclipse启动路径"
+          },
+          "cdtheadlessbuild.argsAdded": {
+            "type": "array",
+            "default": [],
+            "description": "设置Eclipse启动 附加参数"
+          }
+        }
+      },
+      {
+        "title": "Renesas CSP2CMake Configurations",
+        "properties": {
+          "renesas.ccrh_toolchain_path": {
+            "type": "string",
+            "default": "",
+            "description": "设置CCRH Toolchain路径"
+          }
         }
       }
-    }
+    ]
   },
   "scripts": {
     "lint": "eslint .",
