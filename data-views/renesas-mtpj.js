@@ -126,12 +126,8 @@ class RenesasProjectItem extends vscode.TreeItem {
    * @param {object} data  parsed mtpj data
    * @param {string} [tooltipSuffix]  extra tooltip text
    */
-  constructor(data, tooltipSuffix = "", haschildren = false) {
-    if (haschildren) {
-      super(data.name, Expanded);
-    } else {
-      super(data.name, NoCollapsed);
-    }
+  constructor(data, tooltipSuffix = "", haschildren = NoCollapsed) {
+    super(data.name, haschildren);
     this.data = data;
     this.contextValue = "hasChildren";
     this.tooltip = [
