@@ -44,6 +44,23 @@ function parseMtpjFile(filePath) {
     });
 
     const classes = result?.CubeSuiteProject?.Class || [];
+    const file_list_data = classes.find((cls) => cls.$.Guid === "68f4a651-b9cd-473b-a595-b00447132ffa");
+    const root_category = Object.assign({}, ...file_list_data.Instance)["FileCategoryGuid"][0];
+    const file_tree = {
+      "category": {},
+      "files": []
+    }
+
+    if (file_list_data) {
+      file_list_data.Instance.forEach((instance) => {
+        if (instance.Type) {
+          if (instance.Type[0] === "Category") {
+
+          }
+          else if (instance.Type[0] === "File") file_tree.files.push(instance.RelativePath[0]);
+        }
+      })
+    }
 
     const micro_type_class = classes.find(
       (cls) => cls.$.Guid === "096f2041-c115-4158-959e-885938314c77",
@@ -107,9 +124,10 @@ function parseMtpjFile(filePath) {
       matched_class,
       micro_type,
       projectType,
+      file_tree,
     };
   } catch (err) {
-    console.error("parseMtpj error:", err);
+    console.error( "parseMtpj error:", err);
     return null;
   }
 }
@@ -149,7 +167,7 @@ class RenesasBuildModeItem extends vscode.TreeItem {
    * @param {string} projectName
    */
   constructor(mode, projectName, haschildren = NoCollapsed) {
-    
+
     super(mode.name, haschildren);
     this.mode = mode;
     this.projectName = projectName;

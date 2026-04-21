@@ -4,16 +4,20 @@
 #************************************************************
 
 # Source directories
-FILE (GLOB_RECURSE SOURCE ${CMAKE_SOURCE_DIR}
-    "*.c" "*.asm" "*.h"
-)
+#FILE (GLOB_RECURSE SOURCE ${CMAKE_SOURCE_DIR}
+#    "*.c" "*.asm" "*.h"
+#)
 
-FILE (GLOB_RECURSE Source_ASM ${CMAKE_SOURCE_DIR} "*.asm")
-foreach(X IN ITEMS ${Source_ASM})
+#FILE (GLOB_RECURSE Source_ASM ${CMAKE_SOURCE_DIR} "*.asm")
+SET (ASM_FILES 
+<%- asm_files%>)
+
+foreach(X IN LISTS ${ASM_FILES})
     set_source_files_properties(${X} PROPERTIES LANGUAGE ASM)
 endforeach()
 
-add_executable(${PROJECT_NAME} ${SOURCE})
+add_executable(${PROJECT_NAME} 
+<%- all_files%>)
 
 # Include all directories to ${PROJECT_NAME} to search header files
 # target_sources(${PROJECT_NAME} PRIVATE ${RENESAS_TOOLCHAIN_PATH}/../inc)

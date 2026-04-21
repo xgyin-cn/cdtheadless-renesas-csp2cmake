@@ -77,10 +77,11 @@ class RenesasOptionFilter {
           } else option_value[rule.arg] = replaceVars(value[0], env);
         } else if (rule.type === "list") {
           option_value[rule.arg] = value[0]
+            .replaceAll("\\", "/")
             .split("\r")
             .map((x) => replaceVars(x, env));
         } else if (rule.type === "string-env") {
-          option_value[rule.arg] = replaceVars(value[0], env);
+          option_value[rule.arg] = replaceVars(value[0], env).replaceAll("\\", "/");
         }
       }
       // console.log(key,option_value);
@@ -175,9 +176,8 @@ class RenesasMtpjParser {
       ),
     );
 
-    this.version = Object.assign({},...this.cli_maker["C编译选项"].options.get("-V").input_args)["version"];
-    for (const item of this.projectTypeMap[data.projectType])
-    {
+    this.version = Object.assign({}, ...this.cli_maker["C编译选项"].options.get("-V").input_args)["version"];
+    for (const item of this.projectTypeMap[data.projectType]) {
       this.cli_maker[item].setVersion(this.version);
     }
     for (const item of this.option_filted) {
@@ -221,10 +221,14 @@ class RenesasMtpjParser {
     if (include_path_list.length === 0) {
       include_path = "";
     } else {
-      include_path =
-        "    ${CMAKE_SOURCE_DIR}/" +
-        include_path_list.join("\n    ${CMAKE_SOURCE_DIR}/");
+      include_path = "    ${CMAKE_SOURCE_DIR}/" + include_path_list.map((item) => item.replaceAll("\\", "/")).join("\n    ${CMAKE_SOURCE_DIR}/");;
+      // include_path =
+      //   "    ${CMAKE_SOURCE_DIR}/" +
+      //   include_path_list.join("\n    ${CMAKE_SOURCE_DIR}/");
     }
+
+    const all_files = "    " + this.data.file_tree.files.map((item) => item.replaceAll("\\", "/")).join("\n    ");
+    const asm_files = "    " + this.data.file_tree.files.map((item) => item.replaceAll("\\", "/")).filter((item) => item.endsWith(".asm")).join("\n    ");
 
     const ejs_value = {
       c_compiler_options,
@@ -235,6 +239,8 @@ class RenesasMtpjParser {
       include_path,
       ccrh_toolchain_path,
       float_mode,
+      all_files,
+      asm_files
     };
     const root = getContext().extensionPath;
     const workspace = vscode.workspace.workspaceFolders[0].uri.fsPath;
