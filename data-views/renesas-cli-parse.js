@@ -119,15 +119,15 @@ class RenesasMtpjParser {
     }
     const system_env = process.env;
     this.env = {};
-    this.env["ActiveProjectDir"] = path.dirname(data.filePath);
+    this.env["ActiveProjectDir"] = path.dirname(data.filePath).replaceAll("\\", "/");
     this.env["ActiveProjectMicomName"] = data.micro_type;
     this.env["ActiveProjectName"] = data.projectName;
     this.env["BuildModeName"] = data.currentBuildMode;
-    this.env["MainProjectDir"] = path.dirname(data.filePath);
+    this.env["MainProjectDir"] = path.dirname(data.filePath).replaceAll("\\", "/");
     this.env["MainProjectMicomName"] = data.micro_type;
     this.env["MainProjectName"] = data.projectName;
     this.env["MicomToolPath"] = microToolPath;
-    this.env["ProjectDir"] = path.dirname(data.filePath);
+    this.env["ProjectDir"] = path.dirname(data.filePath).replaceAll("\\", "/");
     this.env["ProjectMicomName"] = data.micro_type;
     this.env["ProjectName"] = data.projectName;
     this.env["TempDir"] = system_env.TEMP;
@@ -208,6 +208,7 @@ class RenesasMtpjParser {
         options[item].push(value.compileOptionOutputCli());
       }
     }
+    const csp_prj_root_path = this.env["ActiveProjectDir"];
     const c_compiler_options = options["C编译选项"].join(" ");
     const asm_compiler_options = options["Asm编译选项"].join(" ");
     const link_options = options["链接选项"].join(" ");
@@ -221,7 +222,7 @@ class RenesasMtpjParser {
     if (include_path_list.length === 0) {
       include_path = "";
     } else {
-      include_path = "    ${CMAKE_SOURCE_DIR}/" + include_path_list.map((item) => item.replaceAll("\\", "/")).join("\n    ${CMAKE_SOURCE_DIR}/");;
+      include_path = "    ${CSP_PROJECT_ROOT_PATH}/" + include_path_list.map((item) => item.replaceAll("\\", "/")).join("\n    ${CSP_PROJECT_ROOT_PATH}/");;
       // include_path =
       //   "    ${CMAKE_SOURCE_DIR}/" +
       //   include_path_list.join("\n    ${CMAKE_SOURCE_DIR}/");

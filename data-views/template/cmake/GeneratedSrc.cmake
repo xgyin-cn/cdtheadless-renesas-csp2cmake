@@ -9,6 +9,8 @@
 #)
 
 #FILE (GLOB_RECURSE Source_ASM ${CMAKE_SOURCE_DIR} "*.asm")
+SET (CSP_PROJECT_ROOT_PATH <%- csp_prj_root_path %>)
+
 SET (ASM_FILES 
 <%- asm_files%>)
 
