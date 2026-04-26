@@ -228,10 +228,27 @@ class RenesasMtpjParser {
       //   include_path_list.join("\n    ${CMAKE_SOURCE_DIR}/");
     }
 
-    const all_files = "    " + this.data.file_tree.files.map((item) => item.replaceAll("\\", "/")).join("\n    ");
-    const asm_files = "    " + this.data.file_tree.files.map((item) => item.replaceAll("\\", "/")).filter((item) => item.endsWith(".asm")).join("\n    ");
+    // const prj_class_data = Object.assign({},...this.data.matched_class.Instance);
+
+    const all_files_with_times = {};
+    Object.keys(this.data.excute_files).map((key) => {
+      const file_data = this.data.matched_class.Instance.find((item) => item.$.Guid === key);
+      all_files_with_times[file_data.ItemAddTime[0]] = Object.assign([],{ [parseInt(file_data.ItemAddTimeCount[0])]: key },(all_files_with_times[file_data.ItemAddTime[0]] || []));
+    });
+
+
+    const all_files_with_name = [];
+    Object.keys(all_files_with_times).sort().map((key) => {
+      for (let index = 0; index < all_files_with_times[key].length; index++) {
+        const element = all_files_with_times[key][index];
+        all_files_with_name.push(this.data.file_tree.files[element]);
+      }
+    })
+    const all_files = "    ${CSP_PROJECT_ROOT_PATH}/" + all_files_with_name.map((item) => item.replaceAll("\\", "/")).join("\n    ${CSP_PROJECT_ROOT_PATH}/");
+    const asm_files = "    ${CSP_PROJECT_ROOT_PATH}/" + this.data.file_tree.files.map((item) => item.replaceAll("\\", "/")).filter((item) => item.endsWith(".asm")).join("\n    ${CSP_PROJECT_ROOT_PATH}/");
 
     const ejs_value = {
+      csp_prj_root_path,
       c_compiler_options,
       asm_compiler_options,
       link_options,

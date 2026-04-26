@@ -45,10 +45,9 @@ function parseMtpjFile(filePath) {
 
     const classes = result?.CubeSuiteProject?.Class || [];
     const file_list_data = classes.find((cls) => cls.$.Guid === "68f4a651-b9cd-473b-a595-b00447132ffa");
-    const root_category = Object.assign({}, ...file_list_data.Instance)["FileCategoryGuid"][0];
     const file_tree = {
       "category": {},
-      "files": []
+      "files": {}
     }
 
     if (file_list_data) {
@@ -57,7 +56,7 @@ function parseMtpjFile(filePath) {
           if (instance.Type[0] === "Category") {
 
           }
-          else if (instance.Type[0] === "File") file_tree.files.push(instance.RelativePath[0]);
+          else if (instance.Type[0] === "File") file_tree.files[instance.$.Guid] = instance.RelativePath[0];
         }
       })
     }
@@ -69,8 +68,18 @@ function parseMtpjFile(filePath) {
       .DeviceName[0];
 
     const matched_class = classes.find(
-      (cls) => cls.$.Guid === "eb3b4b69-af1a-4dc1-b2bc-4b81a50fb2a4",
+      (cls) => cls.$.Guid === "eb3b4b69-af1a-4dc1-b2bc-4b81a50fb2a4"
     );
+    const excute_file_instance = matched_class.Instance.find((inst) => inst.$.Guid === "eb3b4b69-af1a-4dc1-b2bc-4b81a50fb2a4");
+
+    const excute_files = {};
+
+    for (let idx = 0; idx < parseInt(excute_file_instance.SourceItemCount?.[0] ?? "0"); idx++) {
+      const source_item_type = excute_file_instance[`SourceItemType${idx}`]?.[0] ?? "";
+      const source_item_guid = excute_file_instance[`SourceItemGuid${idx}`]?.[0] ?? "";
+      excute_files[source_item_guid] = source_item_type;
+    }
+
     const instance = Object.assign({}, ...matched_class.Instance);
     if (!instance) return null;
 
@@ -125,9 +134,10 @@ function parseMtpjFile(filePath) {
       micro_type,
       projectType,
       file_tree,
+      excute_files
     };
   } catch (err) {
-    console.error( "parseMtpj error:", err);
+    console.error("parseMtpj error:", err);
     return null;
   }
 }
