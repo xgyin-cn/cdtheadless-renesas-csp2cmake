@@ -118,7 +118,6 @@
             ],
             "args_valid": {
                 "series":["rh850","v850e3"],
-                "rh850":"rh850",
                 "v850e3":"v850e3v5"
             },
             "switch": "<%= series != '' %>",
