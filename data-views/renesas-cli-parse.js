@@ -142,7 +142,7 @@ class RenesasMtpjParser {
     }
   }
 
-  parseMtpjXmlObj(data) {
+  async parseMtpjXmlObj(data) {
     this.data = data;
     this.clear();
     this.setEnv(data);
@@ -166,31 +166,58 @@ class RenesasMtpjParser {
         ),
       );
     }
+    let deflaut_path = path.normalize("C:/Program Files (x86)/Renesas Electronics/CS+/CC/CC-RH")
     const configers = vscode.workspace.getConfiguration("renesas");
-    configers.update(
-      "ccrh_toolchain_path",
-      path.normalize(
-        Object.assign({}, ...this.cli_maker["C编译选项"].get("-V").input_args)[
-        "path"
-        ][1] + "../../../",
-      ),
-    );
+    this.last_version = Object.assign({}, ...this.cli_maker["C编译选项"].get("-V").input_args)["version"];
+    const last_compiler_path = path.normalize(Object.assign({}, ...this.cli_maker["C编译选项"].get("-V").input_args)["path"][1] + '../');
+    const vscode_config_path = path.normalize(configers.get("ccrh_toolchain_path") || "");
 
-    this.version = Object.assign({}, ...this.cli_maker["C编译选项"].options.get("-V").input_args)["version"];
+    if (!fs.existsSync(deflaut_path)) {
+      if (fs.existsSync(last_compiler_path)) {
+        deflaut_path = last_compiler_path;
+      }
+      else if (fs.existsSync(vscode_config_path)) {
+        deflaut_path = vscode_config_path;
+      }
+    }
+
+    const version_list = fs.readdirSync(deflaut_path, { withFileTypes: true }).filter((dirent) => dirent.isDirectory() && dirent.name.startsWith("V")).map((dirent) => dirent.name);
+    this.version = this.last_version;
+
+    if (version_list.includes(this.last_version)) {
+      this.version = this.last_version;
+    }
+    else {
+      for (let idx = 0; idx < version_list.length; idx++) {
+        const version = version_list[idx];
+        const version_number = version.replace("V", "").split(".").map(num => parseInt(num));
+        const last_version_number = this.last_version.replace("V", "").split(".").map(num => parseInt(num));
+        for (let i = 0; i < version_number.length; i++) {
+          if (version_number[i] > last_version_number[i]) {
+            this.version = version;
+            break;
+          } else if (version_number[i] < last_version_number[i]) {
+            break;
+          }
+        }
+        if (this.version === version_list[idx]) break;
+      }
+    }
+
     for (const item of this.projectTypeMap[data.projectType]) {
       this.cli_maker[item].setVersion(this.version);
     }
     for (const item of this.option_filted) {
       item.filter_options();
     }
+    configers.update("ccrh_toolchain_path", deflaut_path, vscode.ConfigurationTarget.Global);
   }
 
   async generateCmakeCli() {
+    const configers = vscode.workspace.getConfiguration("renesas");
     const float_mode = this.cli_maker["C编译选项"].fpu_flag();
     const ccrh_toolchain_path = path.normalize(
-      Object.assign({}, ...this.cli_maker["C编译选项"].get("-V").input_args)[
-      "path"
-      ][1] + "/bin",
+      `${configers.get("ccrh_toolchain_path")}/${this.version}/bin`,
     ).replaceAll("\\", "/");
     const options = {
       C编译选项: [],
@@ -289,7 +316,6 @@ class RenesasMtpjParser {
       }
     }
 
-    const configers = vscode.workspace.getConfiguration("cmake");
     configers.update("configureSettings", {
       "CMAKE_TOOLCHAIN_FILE": "${workspaceFolder}/cmake/cross.cmake",
       "CMAKE_TOOLS_FOLDER": "${command:renesas.utilities.folder}/tools",
@@ -303,14 +329,14 @@ class RenesasMtpjParser {
     configers.update("configureOnOpen", true);
 
     const cmake_extension = vscode.extensions.getExtension('twxs.cmake')
-    
+
     if (cmake_extension && !cmake_extension.isActive) {
       await cmake_extension.activate();
     }
     try {
       await vscode.commands.executeCommand("cmake.cleanConfigure");
       await vscode.commands.executeCommand("cmake.build");
-    }catch (error) {
+    } catch (error) {
       console.log(error);
     }
 

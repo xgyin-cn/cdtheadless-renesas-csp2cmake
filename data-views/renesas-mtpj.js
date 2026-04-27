@@ -375,7 +375,7 @@ const buildProject = async (element) => {
     currentProject = globalMtpjConfig.filter(
       (p) => p.name === element.projectName,
     )[0];
-    currentProjectParser.parseMtpjXmlObj(currentProject);
+    await currentProjectParser.parseMtpjXmlObj(currentProject);
     if (projectProvider) projectProvider.refresh();
   }
   const data = element;
@@ -399,10 +399,10 @@ const refreshEntry = async () => {
 };
 
 /** Set current project for Config view */
-const setCurrentProject = (element) => {
+const setCurrentProject = async (element) => {
   if (element instanceof RenesasProjectItem) {
     currentProject = element.data;
-    currentProjectParser.parseMtpjXmlObj(currentProject);
+    await currentProjectParser.parseMtpjXmlObj(currentProject);
     if (projectProvider) {
       // projectProvider.getTreeItem(element);
       projectProvider.refresh();
