@@ -3,7 +3,7 @@
   "displayName": "cdtheadlessbuild-renesascsp2cmake",
   "publisher": "wwz",
   "description": "A tool to use CDT headless build mode and Renesas CS+ translate to CMake",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "repository":"https://github.com/wang-zhuo996/cdtheadless-renesas-csp2cmake",
   "engines": {
     "vscode": "^1.95.0"
