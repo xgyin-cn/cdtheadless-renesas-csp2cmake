@@ -152,30 +152,40 @@ class RenesasCliMaker {
     }
 
     fpu_flag() {
-        try{
+        try {
             const fpu_config = this.options.get('-Xfloat');
             const round_config = this.options.get('-Xround');
             const dbl_size = this.options.get('-Xdbl_size');
+            const cpu_options = this.options.get('-Xcpu');
 
-            const fpu_flag = (() => { if (fpu_config.switchCheck() && this.access_required(fpu_config.requiredCheck())) return Object.assign({}, ...fpu_config.input_args)['value']; else return 'none'; })();
-            const round_flag = round_config.switchCheck() && this.access_required(round_config.requiredCheck());
+            const fpu_flag = (() => {
+                const fpu_check = () => { return fpu_config.switchCheck() && this.access_required(fpu_config.requiredCheck()) };
+                const cpu_type = cpu_options ? Object.assign({}, ...cpu_options.input_args)['core'] : '';
+                if (cpu_type === 'g3k') return 'soft';
+                if (['g3kh', 'g3m', 'g3mh'].includes(cpu_type) && !fpu_check()) return 'fpu';
+                if (fpu_check()) {
+                    return Object.assign({}, ...fpu_config.input_args)['value'];
+                }
+                else return 'none';
+            })();
+
+            let round_flag = round_config.switchCheck() && this.access_required(round_config.requiredCheck());
+            if (fpu_flag === 'none') round_flag = false;
             const dbl_size_flag = dbl_size.switchCheck() && this.access_required(dbl_size.requiredCheck());
-            console.log(fpu_flag, round_flag, dbl_size_flag);
+            console.debug("fpu_flag", fpu_flag, "round_flag", round_flag, "dbl_size_flag", dbl_size_flag);
 
             return `rh${fpu_flag === 'none' || fpu_flag === 'soft' ? 's' : 'f'}${dbl_size_flag ? '4' : '8'}${round_flag ? 'z' : 'n'}`
         }
-        catch(error){
+        catch (error) {
             console.log(error);
             return ''
         }
     }
-    access_required(required_req,max_ver,min_ver) {
-        if(max_ver)
-        {
+    access_required(required_req, max_ver, min_ver) {
+        if (max_ver) {
             if (this.versionCompare(max_ver) > 0) return false;
         }
-        if(min_ver)
-        {
+        if (min_ver) {
             if (this.versionCompare(min_ver) < 0) return false;
         }
         if (required_req === true) return true;
@@ -222,7 +232,7 @@ class RenesasCliMaker {
     filter_options() {
         for (const [key, value] of this.options) {
             // console.log(key, value.switchCheck(), this.access_required(value.requiredCheck()));
-            if (value.switchCheck() && this.access_required(value.requiredCheck(),value.maxVersion,value.minVersion)) {
+            if (value.switchCheck() && this.access_required(value.requiredCheck(), value.maxVersion, value.minVersion)) {
                 this.activet_options.push(key);
             }
         }
@@ -233,12 +243,12 @@ class RenesasCliMaker {
     }
 
     versionCompare(version) {
-        let version1 = this.version.replace('V','').split('.').map(Number);
-        let version2 = version.replace('V','').split('.').map(Number);
+        let version1 = this.version.replace('V', '').split('.').map(Number);
+        let version2 = version.replace('V', '').split('.').map(Number);
         for (let i = 0; i < 3; i++) {
             if (version1[i] > version2[i]) return 1;
             else if (version1[i] < version2[i]) return -1;
-        } 
+        }
         return 0;
     }
 }

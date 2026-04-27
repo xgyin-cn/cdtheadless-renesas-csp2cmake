@@ -383,7 +383,7 @@ const buildProject = async (element) => {
     `[Renesas Build] ${data.projectName}.mtpj  Current Build Mode: ${data.label}`,
   );
   // TODO: wire up actual build command (CS+ headless invocation)
-  currentProjectParser.generateCmakeCli();
+  await currentProjectParser.generateCmakeCli();
   console.log(
     "[Renesas Build] Triggered for:",
     data.name,

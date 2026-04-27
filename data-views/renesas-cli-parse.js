@@ -185,7 +185,7 @@ class RenesasMtpjParser {
     }
   }
 
-  generateCmakeCli() {
+  async generateCmakeCli() {
     const float_mode = this.cli_maker["C编译选项"].fpu_flag();
     const ccrh_toolchain_path = path.normalize(
       Object.assign({}, ...this.cli_maker["C编译选项"].get("-V").input_args)[
@@ -233,7 +233,7 @@ class RenesasMtpjParser {
     const all_files_with_times = {};
     Object.keys(this.data.excute_files).map((key) => {
       const file_data = this.data.matched_class.Instance.find((item) => item.$.Guid === key);
-      all_files_with_times[file_data.ItemAddTime[0]] = Object.assign([],{ [parseInt(file_data.ItemAddTimeCount[0])]: key },(all_files_with_times[file_data.ItemAddTime[0]] || []));
+      all_files_with_times[file_data.ItemAddTime[0]] = Object.assign([], { [parseInt(file_data.ItemAddTimeCount[0])]: key }, (all_files_with_times[file_data.ItemAddTime[0]] || []));
     });
 
 
@@ -241,11 +241,16 @@ class RenesasMtpjParser {
     Object.keys(all_files_with_times).sort().map((key) => {
       for (let index = 0; index < all_files_with_times[key].length; index++) {
         const element = all_files_with_times[key][index];
-        all_files_with_name.push(this.data.file_tree.files[element]);
+        if (element != undefined && (element.length ?? 0) == 36) {
+          all_files_with_name.push(this.data.file_tree.files[element]);
+        }
+        else if (element != undefined) {
+          console.debug("文件guid异常", element, "对应的添加时间为", key);
+        }
       }
     })
     const all_files = "    ${CSP_PROJECT_ROOT_PATH}/" + all_files_with_name.map((item) => item.replaceAll("\\", "/")).join("\n    ${CSP_PROJECT_ROOT_PATH}/");
-    const asm_files = "    ${CSP_PROJECT_ROOT_PATH}/" + this.data.file_tree.files.map((item) => item.replaceAll("\\", "/")).filter((item) => item.endsWith(".asm")).join("\n    ${CSP_PROJECT_ROOT_PATH}/");
+    const asm_files = "    ${CSP_PROJECT_ROOT_PATH}/" + Object.values(this.data.file_tree.files).map((item) => item.replaceAll("\\", "/")).filter((item) => item.endsWith(".asm")).join("\n    ${CSP_PROJECT_ROOT_PATH}/");
 
     const ejs_value = {
       csp_prj_root_path,
@@ -296,6 +301,19 @@ class RenesasMtpjParser {
       "Unix Makefiles"
     ]);
     configers.update("configureOnOpen", true);
+
+    const cmake_extension = vscode.extensions.getExtension('twxs.cmake')
+    
+    if (cmake_extension && !cmake_extension.isActive) {
+      await cmake_extension.activate();
+    }
+    try {
+      await vscode.commands.executeCommand("cmake.cleanConfigure");
+      await vscode.commands.executeCommand("cmake.build");
+    }catch (error) {
+      console.log(error);
+    }
+
   }
 }
 

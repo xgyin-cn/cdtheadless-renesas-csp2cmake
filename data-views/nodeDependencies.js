@@ -2,20 +2,6 @@ const vscode = require('vscode');
 const search_file = require("../src/search_file")
 const fs = require('fs');
 const path = require('path');
-// async function findProjectFile() {
-//     let fileUris;
-//     try {
-//         fileUris = await vscode.workspace.findFiles('**/example.txt');
-//         if (fileUris.length > 0) {
-//             console.log('文件存在');
-//         } else {
-//             console.log('文件不存在');
-//         }
-//     } catch (error) {
-//         console.error('查找文件出错:', error);
-//     }
-//     return fileUris;
-// }
 const Collapsed = vscode.TreeItemCollapsibleState.Collapsed;
 const Expanded = vscode.TreeItemCollapsibleState.Expanded;
 const NoCollapsed = vscode.TreeItemCollapsibleState.None;
