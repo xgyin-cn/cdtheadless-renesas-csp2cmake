@@ -4,7 +4,7 @@
   "publisher": "wwz",
   "description": "A tool to use CDT headless build mode and Renesas CS+ translate to CMake",
   "version": "0.1.5",
-  "repository":"https://github.com/wang-zhuo996/cdtheadless-renesas-csp2cmake",
+  "repository": "https://github.com/wang-zhuo996/cdtheadless-renesas-csp2cmake",
   "engines": {
     "vscode": "^1.95.0"
   },
@@ -164,6 +164,38 @@
             "type": "string",
             "default": "",
             "description": "设置CCRH Toolchain路径"
+          }
+        }
+      },
+      {
+        "title": "S-Record Reformat Configurations",
+        "properties": {
+          "srecordReformat.segDataFormat": {
+            "type": "array",
+            "default": [
+              "S2"
+            ],
+            "enum": [
+              "S1",
+              "S2",
+              "S3"
+            ],
+            "description": "设置S-Record重格式化输出的段数据格式，默认为S1"
+          },
+          "srecordReformat.segDataLength": {
+            "type": "integer",
+            "default": 16,
+            "description": "设置S-Record重格式化输出的段数据长度，默认为16"
+          },
+          "srecordReformat.segDataFill": {
+            "type": "integer",
+            "default": 0,
+            "description": "设置S-Record重格式化输出的段数据填充字节，默认为0"
+          },
+          "srecordReformat.segDataMinInterval": {
+            "type": "integer",
+            "default": 200,
+            "description": "设置S-Record重格式化输出的段数据最小间隔，默认为200"
           }
         }
       }

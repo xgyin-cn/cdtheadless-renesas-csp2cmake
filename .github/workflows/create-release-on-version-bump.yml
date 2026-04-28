@@ -22,6 +22,11 @@ jobs:
           persist-credentials: true
           token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
       - name: Extract version from push commits
         id: extract_version
         run: |
@@ -67,3 +72,13 @@ jobs:
           prerelease: false
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install dependencies
+        if: steps.extract_version.outputs.version != ''
+        run: npm ci
+
+      - name: Publish VS Code extension
+        if: steps.extract_version.outputs.version != ''
+        run: npx @vscode/vsce publish --pat "$VSCODE_MARKETPLACE_TOKEN"
+        env:
+          VSCODE_MARKETPLACE_TOKEN: ${{ secrets.VSCODE_MARKETPLACE_TOKEN }}
