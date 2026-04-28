@@ -382,8 +382,19 @@ const buildProject = async (element) => {
   vscode.window.showInformationMessage(
     `[Renesas Build] ${data.projectName}.mtpj  Current Build Mode: ${data.label}`,
   );
-  // TODO: wire up actual build command (CS+ headless invocation)
   await currentProjectParser.generateCmakeCli();
+
+  const cmake_extension = vscode.extensions.getExtension('twxs.cmake')
+
+  if (cmake_extension ) {
+    try {
+      await cmake_extension.activate();
+      await vscode.commands.executeCommand("cmake.cleanConfigure");
+      await vscode.commands.executeCommand("cmake.build");
+    } catch (error) {
+      console.log(error);
+    }
+  }
   console.log(
     "[Renesas Build] Triggered for:",
     data.name,

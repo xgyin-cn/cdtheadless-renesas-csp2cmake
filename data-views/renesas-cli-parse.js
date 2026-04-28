@@ -328,19 +328,6 @@ class RenesasMtpjParser {
       "Unix Makefiles"
     ]);
     cmake_configers.update("configureOnOpen", true);
-
-    const cmake_extension = vscode.extensions.getExtension('twxs.cmake')
-
-    if (cmake_extension && !cmake_extension.isActive) {
-      await cmake_extension.activate();
-    }
-    try {
-      await vscode.commands.executeCommand("cmake.cleanConfigure");
-      await vscode.commands.executeCommand("cmake.build");
-    } catch (error) {
-      console.log(error);
-    }
-
   }
 }
 
