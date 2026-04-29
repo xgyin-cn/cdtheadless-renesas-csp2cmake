@@ -235,16 +235,15 @@ class SRecordReformat {
         }
 
         const dataBytes = segment.length;
-        const length = addrBytes + this.seg_data_length + 1;  // +1 for checksum
         // 构建 S-record 行
         const dataHex = segment.data.toString('hex').toUpperCase();
-        const lengthHex = length.toString(16).toUpperCase().padStart(2, '0');
-        // 计算校验和
-        const lines = [];
 
+        const lines = [];
         for (let i = 0; i < dataBytes; i += this.seg_data_length) {
             const addrHex = (segment.start + i).toString(16).toUpperCase().padStart(addrBytes * 2, '0');
             const dataChunk = dataHex.substr(i * 2, this.seg_data_length * 2);
+            const length = addrBytes + (this.seg_data_length <= (dataChunk.length / 2) ? this.seg_data_length : dataChunk.length / 2) + 1;  // +1 for checksum
+            const lengthHex = length.toString(16).toUpperCase().padStart(2, '0');
             const checksum = (length + addrHex.match(/.{2}/g).reduce((sum, byte) => sum + parseInt(byte, 16), 0)) + dataChunk.match(/.{2}/g).reduce((sum, byte) => sum + parseInt(byte, 16), 0) ^ 0xFF;
             lines.push(`${type}${lengthHex}${addrHex}${dataChunk}${(checksum % 0x100).toString(16).toUpperCase().padStart(2, '0')}`);
         }
