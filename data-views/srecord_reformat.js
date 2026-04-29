@@ -16,12 +16,15 @@ async function* createLineIterator(filePath) {
 
 async function reformatSRecordFile(filePath) {
     const sRecordReformat = new SRecordReformat(filePath.fsPath);
-    return await sRecordReformat.reformatSRecordFile(false);
+    await sRecordReformat.reformatSRecordFile();
+    return await this.generateNewSRecords(false);
 }
 
 async function reformatSRecordFileInDocument(filePath) {
     const sRecordReformat = new SRecordReformat(filePath.fsPath);
-    return await sRecordReformat.reformatSRecordFile(true);
+    await sRecordReformat.reformatSRecordFile();
+    return await this.generateNewSRecords(true);
+
 }
 
 
@@ -57,7 +60,7 @@ class SRecordReformat {
 
     }
 
-    async reformatSRecordFile(inDocument = false) {
+    async reformatSRecordFile() {
         let lastDataEnd = null;  // 上一个数据段的结束地址
         for await (const line of createLineIterator(this.filePath)) {
             if (line.startsWith('S')) {
@@ -146,8 +149,6 @@ class SRecordReformat {
                 }
             }
         }
-        // 根据 dataMap 生成新的 S-record 输出（略）
-        return await this.generateNewSRecords(inDocument);
     }
 
     async generateNewSRecords(inDocument) {
