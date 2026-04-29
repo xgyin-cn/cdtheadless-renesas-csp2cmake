@@ -202,6 +202,21 @@
             "default": "",
             "description": "设置CCRH Toolchain路径",
             "scope": "application"
+          },
+          "renesas.genrpostbuild": {
+            "type": "boolean",
+            "default": false,
+            "description": "设置是否启用生成后构建"
+          },
+          "renesas.clearbuild": {
+            "type": "boolean",
+            "default": false,
+            "description": "设置是否启用清除构建"
+          },
+          "renesas.formatpostbuild": {
+            "type": "boolean",
+            "default": false,
+            "description": "设置是否启用生成后格式化"
           }
         }
       },
@@ -216,7 +231,7 @@
               "S2",
               "S3"
             ],
-            "description": "设置S-Record重格式化输出的段数据格式，默认为S1"
+            "description": "设置S-Record重格式化输出的段数据格式，默认为S2"
           },
           "srecordReformat.segDataLength": {
             "type": "integer",
@@ -234,8 +249,8 @@
             "description": "设置S-Record重格式化输出的段数据最小间隔，默认为200"
           },
           "srecordReformat.reformatFileFormat": {
-            "type":"string",
-            "default":"${fileDirname}/${fileBasenameNoExtension}_reformatted${fileExtname}",
+            "type": "string",
+            "default": "${fileDirname}/${fileBasenameNoExtension}_reformatted${fileExtname}",
             "description": "设置S-Record重格式化输出的文件路径和名称，默认为在原文件目录下，原文件名加上_reformatted后缀，扩展名为.s19",
             "scope": "application"
           }
